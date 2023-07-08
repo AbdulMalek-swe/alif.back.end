@@ -47,7 +47,18 @@ const userSchema = mongoose.Schema(
         message: "Passwords don't match!",
       },
     },
-
+    wishlist:[{ 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+  }],
+    isSubscribe:{
+      type:Boolean,
+      default:false
+    },
+    subscribeNo:{
+       type:Number,
+       default:0 
+    },
     // role: {
     //   type: String,
     //   enum: ["buyer", "store-manager", "admin"],

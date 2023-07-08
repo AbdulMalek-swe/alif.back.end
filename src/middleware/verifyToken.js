@@ -13,7 +13,7 @@ module.exports.verifyToken = async(req,res,next)=>{
         }
     const decode = await promisify(jwt.verify)(token,process.env.SECRET_JWT_KEY);
        req.user = decode
-       console.log(req.user);
+     
        next();
     }catch(error){
         res.status(403).json({

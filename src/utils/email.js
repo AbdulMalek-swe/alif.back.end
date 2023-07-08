@@ -44,6 +44,6 @@ module.exports.sendMailWithGmail = async (data) => {
     return info.messageId;
    }
    catch(error){
-        console.log(error.message)
+         
    }
 };

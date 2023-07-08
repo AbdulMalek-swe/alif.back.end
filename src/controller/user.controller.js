@@ -1,6 +1,7 @@
 const { signupService,
    findUserByToken, 
-   findUserByEmail } = require("../service/user.service");
+   findUserByEmail, 
+   userSubscribeService} = require("../service/user.service");
 const { sendMailWithGmail } = require("../utils/email");
 const { generateToken } = require("../utils/token");
 
@@ -8,10 +9,7 @@ const { generateToken } = require("../utils/token");
   // register function 
   module.exports.signup = async (req, res) => {
     try {
-      
       const user = await signupService(req.body);
-       
-      // const token = generateToken(user)
        const token =  await  user.generateConfirmationToken()
       await user.save({validateBeforeSave:false});
       const mailData = { 
@@ -21,34 +19,31 @@ const { generateToken } = require("../utils/token");
           req.protocol
         }://${req.get("host")}${req.originalUrl}confirmation/${token}`,
         html: `
-        <a href="${req.protocol}://${req.get(
+        <a href="${req.protocol}://${req.get(    
         "host" 
-      )}${req.originalUrl}confirmation/${token}"  style="display: inline-block; background-color: blue; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px; margin-top: 10px;">Veryfi me</a>
+      )}${req.originalUrl}confirmation/${token}"  style="display: inline-block; background-color: blue; color: white; text-decoration: none; padding: 10px 20px; border-radius: 4px; margin-top: 10px; text-align:center;">Veryfi your account</a>
         <br>
-        This is our first message sent with Nodemailer<br/>`,
+         <br/>`,
       }
       await sendMailWithGmail(mailData)
       res.status(200).json({  
         status: "succesfful",
-        message: "get user data",
+        message: "Check Email To Active Account",
       });
     }
     catch (error) {
-      console.log(error.message);
-      res.status(500).json({
-        status: "authentiacation failed",
-        message: "signup is failed",
-        result: error.message
+      res.status(401).json({
+       error: error.message
       })
     } 
-  }
+  } 
   // login function 
   module.exports.login = async (req, res) => {
     try {
       const { email, password } = req.body;
-  
+   
       if (!email || !password) {
-        return res.status(401).json({
+        return res.status(401).json({ 
           status: "fail",
           error: "Please provide your credentials",
         });
@@ -62,11 +57,10 @@ const { generateToken } = require("../utils/token");
           error: "No user found. Please create an account",
         });
       }
-  
       const isPasswordValid = user.comparePassword(password, user.password);
-      console.log(isPasswordValid)
       if (!isPasswordValid) {
-        return res.status(403).json({
+        
+        return res.status(401).json({
           status: "fail",
           error: "Password is not correct",
         });
@@ -82,32 +76,41 @@ const { generateToken } = require("../utils/token");
       res.status(200).json({
         status: "success",
         message: "Successfully logged in",
-          token,
+        token : token,
+        data:others
       });
     } catch (error) {
-      res.status(500).json({
+    
+      res.status(401).json({
         status: "fail",
-        
+        error:error.message
       });
     }
   };
   // profile get 
   module.exports.getMe= async (req, res) => {
     try {
-         console.log(req.protocol);
-      const result = await findUserByEmail(req.user?.email);
-      const {password:pwd,...others} = result.toObject();
+      
+      const user = await findUserByEmail(req.user?.email);
+      const {password:pwd,...other} = user.toObject();
+
+      const modifiedWishlist = other.wishlist.map(item => {
+        const { like, ...rest } = item;
+        return rest;
+      });
+      
+      // Create a new object with the modified wishlist
+      const others= { ...other, wishlist: modifiedWishlist };
+    
       res.status(200).json({
         status: "succesfful",
-        message: "get user data",
-        result: others
+        message: "get user all data",
+        data: others
       });
     }
     catch (error) {
       res.status(500).json({
-        status: "authentiacation failed",
-        message: "signup is failed",
-        result: error.message
+        error: error.message
       })
     }
   }
@@ -115,16 +118,16 @@ const { generateToken } = require("../utils/token");
   module.exports.confirmationAccount = async (req,res)=>{
         try{
            const {token} = req.params;
-           console.log(token);
+        
            const user =await findUserByToken(token);
-        console.log(user);
+ 
            if(!user){
             return res.status(403).json({
               status:"fail getting user",
                error:"invalid user"
             })
            }
-           console.log(new Date(), " = = " ,new Date(user.confirmationTokenExpires))
+        
            const expired = new Date()>new Date(user.confirmationTokenExpires);
           if(expired){
             return res.status(403).json({
@@ -136,19 +139,38 @@ const { generateToken } = require("../utils/token");
           user.confirmationToken = undefined,
           user.confirmationTokenExpires=undefined,
            user.save({validateBeforeSave:false});
-          console.log(user);
-          // res.status(200).json({
-          //   status:"active account successfully",
-          //   message: "congrats",
-          //   result: user
-          // });
           res.redirect('http://localhost:3000/login');
           }
         catch(error){
-          console.log(error)
+         
           res.status(500).json({
             status:"fail",
             error
           })
         }
   }
+
+  module.exports.userSubscribe= async(req,res)=>{
+    try {
+        const {isSubscribe,email} = await findUserByEmail(req.user?.email);
+        
+        if(email!==req.body.email){
+          return res.status(501).json({
+          error:"email mismatch"
+          })
+        }
+      else  if(isSubscribe){
+          return res.status(501).json({
+          error:"this email already use"
+          })
+        }
+       
+        const result = await userSubscribeService(req.body.email,req.user.email)
+        res.status(200).json({
+        
+        })
+    } catch (error) {
+        
+    }
+}
+ 
