@@ -4,21 +4,18 @@ const valid = require("validator");
 const bannerSchema= mongoose.Schema({
     bannerFirstHeader: {  
         type: String,
-        required:[false,"ok"]
+        required:[true,"must be field this"]
     },
-      
     bannerSecondHeader: {  
         type: String,
-        required:[false,"ok"]
+        required:[true,"must be field this"]
     },
-    
     discount: {   
         type: Number,
-        unique: false, 
     },
     bannerImage:{
         type:String,
-        required:[false,"ok"]
+        required:[true,"must be field this"]
     }  
 }, {
     timestamps: true

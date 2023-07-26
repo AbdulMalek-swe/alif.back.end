@@ -59,11 +59,11 @@ const userSchema = mongoose.Schema(
        type:Number,
        default:0 
     },
-    // role: {
-    //   type: String,
-    //   enum: ["buyer", "store-manager", "admin"],
-    //   default: "buyer",
-    // },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
 
    
 

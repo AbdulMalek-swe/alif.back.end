@@ -6,7 +6,7 @@ const veganSchema= mongoose.Schema({
         type: String,
         required:[true,"header must sent"]
     },
-   veganDescrition:{
+   veganDescription:{
     type:String,
     required:[true,'must sent description']
    },

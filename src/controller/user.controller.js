@@ -12,7 +12,7 @@ const { generateToken } = require("../utils/token");
       const user = await signupService(req.body);
        const token =  await  user.generateConfirmationToken()
       await user.save({validateBeforeSave:false});
-      const mailData = { 
+       const mailData = { 
         to:[user.email],
         subject:"veryfy your token",
         text:` thank u for confirm account : ${
@@ -139,16 +139,15 @@ const { generateToken } = require("../utils/token");
           user.confirmationToken = undefined,
           user.confirmationTokenExpires=undefined,
            user.save({validateBeforeSave:false});
-          res.redirect('http://localhost:3000/login');
+          res.redirect(process.env.WEB_PATH);
           }
         catch(error){
-         
           res.status(500).json({
             status:"fail",
             error
           })
         }
-  }
+  } 
 
   module.exports.userSubscribe= async(req,res)=>{
     try {
@@ -164,13 +163,13 @@ const { generateToken } = require("../utils/token");
           error:"this email already use"
           })
         }
-       
         const result = await userSubscribeService(req.body.email,req.user.email)
         res.status(200).json({
-        
+              message:'successfully subscribe',
+              result
         })
     } catch (error) {
-        
+      error: error.message
     }
 }
  

@@ -11,7 +11,7 @@ router
     .get("/user/signup/confirmation/:token", userController.confirmationAccount)
     
     // 
-    
+     
   
     
 module.exports = router;

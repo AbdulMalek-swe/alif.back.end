@@ -7,11 +7,10 @@ const ProductSchema= mongoose.Schema({
         required: [true, "provide a valid name"],
         
     },
-     
     price:{
         type:Number,
-        required:[true,"set minimum price"],
-        
+        required:[true,"set price"],
+        min:1
     },
     color:{
         type:String,
@@ -20,7 +19,7 @@ const ProductSchema= mongoose.Schema({
         required:true,
         validate: {
             validator: function(value) {
-              return ['shoulder', 'clutches'].includes(value);
+              return ['red', 'blue','white','yellow','green','black'].includes(value);
             },
             message: 'Please provide a valid category (shoulder or clutches).'
           }
@@ -39,80 +38,51 @@ const ProductSchema= mongoose.Schema({
         enum: ['out-of-stock', 'in-stock'],
          default: 'in-stock'
     },
-    productImage:{
-        type:String,
-        required:[true,'must be save image']
-    },
-    productSell:{
+    productImage: {
+        type: [String],
+        required: true
+      },
+    productSell:{ 
         type:Number,
         default:0
     },
     category:{
         type:String,
-        enum:['shoulder','clutches'],
+        enum:['','shoulder', 'clutches', 'handbags', 'pouch', 'buckets', 'pouches', 'vegan'],
         required:true,
         validate: {
             validator: function(value) {
-              return ['shoulder', 'clutches'].includes(value);
+              return ['shoulder', 'clutches', 'handbags', 'pouch', 'buckets', 'pouches', 'vegan'].includes(value);
             },
-            message: 'Please provide a valid category (shoulder or clutches).'
-          }
+            message: 'Please provide a valid category'
+          },
+    
     } ,
     skwNo:{
         type:String,
         required:[true,'enter skw number'],
         default:'0001-cbw'
+    },
+    offerPrice:{
+        type:Number,
+         default:0 
+    },
+    offerCategory:{
+        type:String,
+        default:""
     }
-    // unit: {
-    //     type: String,
-    //     required: true,
-    //     enum: {
-    //         values: ["kg", "litre", "pcs", "bag"],
-    //         message: "value must be {Value} psc/litre/kg"
-    //     }
-    // },
-    // imageURLs:[ {
-    //     type: String,
-    //     required: true,
-    //     validate: [valid.isURL, "wrong url"]
-    //   }],
-    // imageURLs: [{
-    //     type: String,
-    //     require: true,
-    //     validate: {
-    //         validator: (value) => {
-    //             if (!Array.isArray(value)) {
-    //                 return false;
-    //             }
-    //             value.forEach(url => {
-    //                 if (!validator.isURL(url)) {
-    //                     isValid = false;
-    //                 }
-    //             })
-    //             return isValid;
-    //         },
-    //         message: "please provide validate image urls"
-    //     }
-    // }],
+ 
+ 
     
-    // category:{
-    //     type:String,
-    //     required:true
-    // },
-    // brand:{
-    //     name:{
-    //         type:String,
-    //         required:true
-    //     },
-    //     id:{
-    //         type:ObjectId,
-    //         required:true,
-    //         ref:"Brand"
-    //     }
-    // }
+  
 }, {
     timestamps: true
 });
+ProductSchema.pre('save',function(next){
+    console.log(this.price);
+    this.offerPrice = this.price
+    next()
+})
 // ProductSchema
 // .pre('save',(next)=>{
 //     if(this.quantity==0){

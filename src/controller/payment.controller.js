@@ -1,17 +1,21 @@
 
-const stripe = require('stripe')('sk_test_51MvGRULyPagBwcPn1TU5Lz4zs5gtiPXOI0mu4fTuB0bCw2nVQaEx6kMhwLDTBYrtM4egGrYPDequW4jT9nxaP0LS00n9kJftIq');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const twilio = require('twilio');
+const { paymentService } = require('../service/payment.service');
+
  module.exports.payment = async(req,res)=>{
 // StripePaymentView
-  try {
+  try { 
     const {id} = req.body;
-        
-      //  await  statusPhotographerService(id,{activeStatus:'false'})
-      const c_amount =12;
+        const {email} = req.body.address;
+        console.log(email);
+        const c_amount = await paymentService(req.body.order)
+       
       const intent = await stripe.paymentIntents.create({
         amount: 100 * c_amount,
         currency: 'usd',
         payment_method_types: ['card'],
-      });
+      });  
       // await Charge.create({
       //   // user: req.user,
       //   amount: c_amount,
@@ -24,9 +28,10 @@ const stripe = require('stripe')('sk_test_51MvGRULyPagBwcPn1TU5Lz4zs5gtiPXOI0mu4
         amount: c_amount,
         payment_id: intent.id,
         client_secret: intent.client_secret,
-        publish_key: 'pk_test_51MvGRULyPagBwcPn8cfry3uU9i9gGASSwjiGcTz10T4zUROjvtfdtuyx4NGQYwWX8gRqbAjFV3E9rW4B44WsP161006YllnuPM',
+        publish_key: process.env.STRIPE_PUBSLISHED_KEY,
       });
-  } catch (error) {
+  } catch (error) { 
+    console.log(error.message);
   res.status(400).json({
       error: error.toString(),
     });
@@ -35,7 +40,7 @@ const stripe = require('stripe')('sk_test_51MvGRULyPagBwcPn1TU5Lz4zs5gtiPXOI0mu4
  module.exports.paymentConfirm =async(req,res)=>{
 try {
       const { payment_id } = req.body;
-       
+          console.log(req.body);
         res.status(201).json({
           message: 'You successfully subscribed',
           data: {
@@ -53,3 +58,22 @@ try {
         });
 }
  }
+//  +12345163992
+
+
+// phone sms recieve code here 
+
+  //    console.log(req.body.c.length);
+      //    const client = twilio('ACd5ac0ca1c1302895a8478f9f01f730b3', '0faeb03044364d53c1ba9414c789852e');
+      //    console.log(client);
+      //    const verification = await client.verify.services('VA21a8f24fa958f570aaef77de2efcb09b')
+      // .verifications
+      // .create({ to: '+8801977528702', channel: 'sms' });
+
+      //    const message = await client.messages.create({
+      //     body: 'Payment has been successfully completed.',
+      //     from: '+12345163992',
+      //     to: '+8801977528702',
+      //   });
+        // console.log('Message sent:', verification.sid);
+      //  await  statusPhotographerService(id,{activeStatus:'false'})
