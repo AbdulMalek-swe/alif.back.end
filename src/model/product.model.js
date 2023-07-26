@@ -70,8 +70,12 @@ const ProductSchema= mongoose.Schema({
     offerCategory:{
         type:String,
         default:""
-    }
- 
+    },
+        offerRate:{
+            type:Number,
+            default:0 
+        }
+    
  
     
   
