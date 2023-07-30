@@ -3,6 +3,7 @@ const router = express.Router();
 const paymentController = require("../controller/payment.controller");
  
 router
+.get("/paypal",paymentController.paypalPayment)
     .post("/payment-method/get-payment-intent",paymentController.payment )
     .post("/payment-method/verify-payment/", paymentController.paymentConfirm)
      

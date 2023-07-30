@@ -6,22 +6,17 @@ const { paymentService } = require('../service/payment.service');
  module.exports.payment = async(req,res)=>{
 // StripePaymentView
   try { 
-    const {id} = req.body;
+         const {id} = req.body;
         const {email} = req.body.address;
         console.log(email);
         const c_amount = await paymentService(req.body.order)
        
       const intent = await stripe.paymentIntents.create({
-        amount: 100 * c_amount,
+        amount: 100 * c_amount,  
         currency: 'usd',
         payment_method_types: ['card'],
       });  
-      // await Charge.create({
-      //   // user: req.user,
-      //   amount: c_amount,
-      //   client_secret: intent.client_secret,
-      //   payment_id: intent.id,
-      // });
+    
  
       res.status(200).json({
         message: 'Payment intent created successfully',
@@ -59,6 +54,22 @@ try {
 }
  }
 //  +12345163992
+
+module.exports.paypalPayment = async(req,res)=>{
+  try {
+  
+    
+    
+    
+   
+    
+  } catch (error) {
+    
+  }
+}
+
+
+
 
 
 // phone sms recieve code here 

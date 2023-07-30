@@ -3,7 +3,8 @@ const { postProductService,
      likeUpdateProductService,
     getOneProductService, 
     deleteProductService,
-    updateProductService} = require("../service/product.service");
+    updateProductService,
+    deleteBulkProductService} = require("../service/product.service");
 
 module.exports.getProduct = async(req,res)=>{
     try {
@@ -102,6 +103,23 @@ module.exports.deleteProduct = async(req,res)=>{
         const result = await deleteProductService(id)
         res.json({
             result   
+            
+        })
+    } catch (error) {
+        
+    }
+}
+module.exports.deleteBulkProduct = async(req,res)=>{
+    try {
+        // const {id} = req.params;
+        // 
+        console.log(req.body );
+     
+const idsArray = req.body.map(item => item?._id);
+
+const result = await deleteBulkProductService(idsArray)
+        res.json({
+            // result   
             
         })
     } catch (error) {

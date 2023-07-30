@@ -63,3 +63,9 @@ module.exports.deleteProductService = async (id)=>{
   
  return result
 }
+module.exports.deleteBulkProductService = async (ids)=>{
+  
+  const result = await Product.deleteMany({_id:ids})
+  
+ return result
+}
